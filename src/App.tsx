@@ -5,7 +5,7 @@ import { translateHaveSoundWithCurrent, langs } from "translate-audio";
 
 import { Toaster, toast } from "react-hot-toast";
 import SpinFC from "antd/es/spin";
-import { SoundOutlined } from "@ant-design/icons";
+import { SoundOutlined, DeleteOutlined } from "@ant-design/icons";
 import WriteVocab from "./component/WriteVocab";
 import ListenVocab from "./component/ListenVocab";
 interface IData {
@@ -135,6 +135,12 @@ function App() {
   const onChangeTag = (key: string) => {
     console.log(key);
   };
+  const handleDelete = (vocab: string) => {
+    toast.success(`Xóa thành công từ: ` + vocab);
+    setListData((listPreItem) =>
+      listPreItem.filter((item) => item.vocab !== vocab)
+    );
+  };
   return (
     <>
       {isLoadding && (
@@ -142,7 +148,7 @@ function App() {
           <SpinFC size="large" className="m-auto" />
         </div>
       )}
-      <div className="container mx-auto">
+      <div className="container mx-auto text-base">
         <h1 className="text-3xl mt-8 mb-4 font-bold text-center ">
           Thêm từ vựng vào kho từ điển
         </h1>
@@ -222,6 +228,9 @@ function App() {
                   <th scope="col" className="px-6 py-3">
                     Audio
                   </th>
+                  <th scope="col" className="px-6 py-3">
+                    Delete
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -235,12 +244,12 @@ function App() {
                       <td className="px-6 py-4">{index + 1}</td>
                       <th
                         scope="row"
-                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white capitalize"
+                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-base"
                       >
                         {item.vocab}
                       </th>
 
-                      <td className="px-6 py-4 capitalize">
+                      <td className="px-6 py-4 capitalize text-base">
                         {item.vocab_translate}
                       </td>
                       <td className="px-6 py-4">
@@ -249,6 +258,14 @@ function App() {
                           className="py-2 text-white bg-pink-400 hover:bg-pink-500 rounded-full px-3"
                         >
                           <SoundOutlined />
+                        </button>
+                      </td>
+                      <td className="px-6 py-4">
+                        <button
+                          onClick={() => handleDelete(item.vocab)}
+                          className="py-2 text-white bg-red-400 hover:bg-red-500 rounded-full px-3"
+                        >
+                          <DeleteOutlined />
                         </button>
                       </td>
                     </tr>
