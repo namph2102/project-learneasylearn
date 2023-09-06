@@ -10,6 +10,7 @@ interface ListenVocabProps {
   typeCheck: 1 | 2 | 3;
   handleRandomSound: () => void;
   setTypeCheck: (value: 1 | 2 | 3) => void;
+  handlePlaysound: () => void;
 }
 const classSuccess =
   "border-green-500 text-green-900 dark:text-green-400 placeholder-green-700 dark:placeholder-green-500  rounded-lg focus:ring-green-500 focus:border-green-500  w-full p-2.5 dark:bg-gray-700 dark:border-green-500";
@@ -19,6 +20,7 @@ const ListenVocab: React.FC<ListenVocabProps> = ({
   currentValueGame,
   handleRandomSound,
   typeCheck,
+  handlePlaysound,
   setTypeCheck,
 }) => {
   useEffect(() => {
@@ -84,6 +86,13 @@ const ListenVocab: React.FC<ListenVocabProps> = ({
             className="py-2 px-5 bg-yellow-400 hover:bg-yellow-600 rounded-xl"
           >
             Random Sound
+          </button>
+          <button
+            type="button"
+            onClick={handlePlaysound}
+            className="py-2 px-5 bg-pink-400 hover:bg-pink-600 rounded-xl"
+          >
+            Repeat
           </button>
           <button
             type="submit"

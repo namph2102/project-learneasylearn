@@ -126,6 +126,9 @@ function App() {
           currentValueGame={currentValueGame}
           setTypeCheck={setTypeCheck}
           handleRandomSound={handleRandomSound}
+          handlePlaysound={() => {
+            playSound(currentValueGame.sound);
+          }}
           typeCheck={typeCheck}
         />
       ),
