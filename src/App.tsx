@@ -21,20 +21,34 @@ function App() {
   const [fromLanguge, setFromLanguge] = useState<any>("en");
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [toLanguage, setToLanguage] = useState<any>("vi");
+  const [listDataRandom, setDataRandom] = useState<IData[]>([]);
   const [isLoadding, setIsLoadding] = useState(false);
   const [vocab, setVocab] = useState("");
   const [page, setPage] = useState(1);
   const [listData, setListData] = useState<IData[]>(() => {
     const listVocabs = localStorage.getItem("listVocabs");
     if (listVocabs) {
-      return JSON.parse(listVocabs).reverse();
+      const coverListVocabs = JSON.parse(listVocabs)?.reverse() || [];
+      setDataRandom(coverListVocabs);
+      return coverListVocabs;
     }
     return [];
   });
 
   useEffect(() => {
-    localStorage.setItem("listVocabs", JSON.stringify(listData));
+    try {
+      localStorage.setItem("listVocabs", JSON.stringify(listData));
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      toast.error(error.message);
+    }
   }, [listData.length]);
+  useEffect(() => {
+    if (listDataRandom.length < 1) {
+      setDataRandom(() => listData);
+    }
+  }, [listDataRandom.length, listData.length]);
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!vocab) return;
@@ -43,6 +57,12 @@ function App() {
       from: fromLanguge,
       to: toLanguage,
     }).then((data: IData) => {
+      const newDataVocab = {
+        sound: data.sound,
+        vocab: data.vocab,
+        vocab_translate: data.vocab_translate,
+      };
+      setDataRandom((prev) => [...prev, newDataVocab]);
       setListData((prev) => {
         const checkItemExtensive = prev.some(
           (item) => item.vocab.toLowerCase() == data.vocab.toLowerCase()
@@ -51,14 +71,7 @@ function App() {
           toast.success(
             `Thêm thành công từ: ${vocab} = ` + data.vocab_translate
           );
-          return [
-            {
-              sound: data.sound,
-              vocab: data.vocab,
-              vocab_translate: data.vocab_translate,
-            },
-            ...prev,
-          ];
+          return [newDataVocab, ...prev];
         }
         toast.success(`từ đã tồn tại rồi`);
         return prev;
@@ -83,18 +96,24 @@ function App() {
   const handleRandom = () => {
     setTypeCheck(1);
 
-    const index = Math.floor(Math.random() * listData.length);
-    if (listData.length && listData[index]) {
-      setCurrentValueGame(() => listData[index]);
+    const index = Math.floor(Math.random() * listDataRandom.length);
+    if (listDataRandom.length && listDataRandom[index]) {
+      setCurrentValueGame(() => listDataRandom[index]);
+      setDataRandom((prev) =>
+        prev.filter((item) => item.vocab !== listDataRandom[index].vocab)
+      );
     }
   };
   const handleRandomSound = () => {
     setTypeCheck(1);
 
-    const index = Math.floor(Math.random() * listData.length);
-    if (listData.length && listData[index]) {
-      setCurrentValueGame(() => listData[index]);
-      playSound(listData[index].sound);
+    const index = Math.floor(Math.random() * listDataRandom.length);
+    if (listDataRandom.length && listDataRandom[index]) {
+      setCurrentValueGame(() => listDataRandom[index]);
+      setDataRandom((prev) =>
+        prev.filter((item) => item.vocab !== listDataRandom[index].vocab)
+      );
+      playSound(listDataRandom[index].sound);
     }
   };
 
@@ -135,9 +154,6 @@ function App() {
     },
   ];
 
-  const onChangeTag = (key: string) => {
-    console.log(key);
-  };
   const handleDelete = (vocab: string) => {
     toast.success(`Xóa thành công từ: ` + vocab);
     setListData((listPreItem) =>
@@ -285,7 +301,7 @@ function App() {
             />
           </div>
         </section>
-        <Tabs defaultActiveKey="1" items={listags} onChange={onChangeTag} />
+        <Tabs defaultActiveKey="1" items={listags} />
 
         <audio ref={audioRef} className="hidden" />
       </div>
