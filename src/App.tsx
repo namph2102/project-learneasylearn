@@ -119,7 +119,7 @@ function App() {
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const playSound = (sound: string) => {
-    if (audioRef.current && sound) {
+    if (audioRef.current && sound && audioRef.current.src !== sound) {
       audioRef.current.src = sound;
       audioRef.current.play();
     }
