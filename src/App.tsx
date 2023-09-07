@@ -118,12 +118,18 @@ function App() {
   };
 
   const audioRef = useRef<HTMLAudioElement>(null);
-  const playSound = (sound: string) => {
+  const setSoundAudio = (sound: string) => {
     if (audioRef.current && sound && audioRef.current.src !== sound) {
       audioRef.current.src = sound;
+    }
+  };
+  const playSound = (sound: string) => {
+    if (audioRef.current) {
+      setSoundAudio(sound);
       audioRef.current.play();
     }
   };
+
   const listags: TabsProps["items"] = [
     {
       key: "1",
@@ -271,7 +277,10 @@ function App() {
                       <td className="px-6 py-4 capitalize text-base">
                         {item.vocab_translate}
                       </td>
-                      <td className="px-6 py-4">
+                      <td
+                        onMouseOver={() => setSoundAudio(item.sound)}
+                        className="px-6 py-4"
+                      >
                         <button
                           onClick={() => playSound(item.sound)}
                           className="py-2 text-white bg-pink-400 hover:bg-pink-500 rounded-full px-3"
